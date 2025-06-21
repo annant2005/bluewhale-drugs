@@ -6,6 +6,8 @@ from src.components.mol3d_viewer import show_molecule
 import pubchempy as pcp
 import pandas as pd
 from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
+import numpy as np
+import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Drug Toxicity Prediction", layout="wide")
 # Add custom CSS for wider content and professional color sections
@@ -197,3 +199,55 @@ else:
             styled_df = df.style.applymap(color_toxicity, subset=['Toxicity']) \
                               .applymap(color_solubility, subset=['Solubility'])
             st.dataframe(styled_df, use_container_width=True)
+            # --- Add charts ---
+            if 'Toxicity' in df and 'Solubility' in df:
+                st.markdown("### 📈 Toxicity & Solubility Distribution")
+                x = np.arange(len(df))
+                width = 0.35
+                fig1, ax1 = plt.subplots(figsize=(8, 4))
+                # Glossy gradient colors matching About & Workflow section
+                from matplotlib.patches import Rectangle
+                def glossy_bar(ax, x, height, width, color1, color2, label=None):
+                    for i, h in enumerate(height):
+                        bar = Rectangle((x[i] - width/2, 0), width, h, color=color1, zorder=2, label=label if i==0 else "")
+                        ax.add_patch(bar)
+                        # Overlay a glossy gradient
+                        ax.add_patch(Rectangle((x[i] - width/2, 0), width, h, zorder=3, 
+                            facecolor=color2, alpha=0.35, label=None))
+                # Toxicity: purple gradient (#6a11cb to #2575fc)
+                glossy_bar(ax1, x - width/2, df['Toxicity'], width, '#6a11cb', '#2575fc', label='Toxicity')
+                # Solubility: green-cyan gradient (#43e97b to #38f9d7)
+                glossy_bar(ax1, x + width/2, df['Solubility'], width, '#43e97b', '#38f9d7', label='Solubility')
+                ax1.set_xlim(-1, len(df))
+                ax1.set_xlabel('Compound Index')
+                ax1.set_ylabel('Score')
+                ax1.set_title('Toxicity & Solubility Distribution', fontsize=14, fontweight='bold')
+                ax1.set_xticks(x)
+                ax1.set_xticklabels([str(i+1) for i in x], rotation=0)
+                ax1.legend(['Toxicity', 'Solubility'], loc='upper right')
+                ax1.grid(axis='y', linestyle='--', alpha=0.4, zorder=1)
+                for i, h in enumerate(df['Toxicity']):
+                    ax1.text(x[i] - width/2, h + 0.01, f'{h:.2f}', ha='center', va='bottom', fontsize=9, color='#6a11cb', fontweight='bold')
+                for i, h in enumerate(df['Solubility']):
+                    ax1.text(x[i] + width/2, h + 0.01, f'{h:.2f}', ha='center', va='bottom', fontsize=9, color='#43e97b', fontweight='bold')
+                plt.tight_layout()
+                st.pyplot(fig1)
+            if 'Intoxicant' in df:
+                st.markdown("### 🧪 Intoxicant Class Distribution")
+                intoxicant_counts = df['Intoxicant'].value_counts()
+                fig2, ax2 = plt.subplots(figsize=(5, 4))
+                colors = ['#1976d2', '#e53935'] if 'Yes' in intoxicant_counts.index else ['#43a047', '#e53935']
+                wedges, texts, autotexts = ax2.pie(
+                    intoxicant_counts,
+                    labels=intoxicant_counts.index,
+                    autopct='%1.0f%%',
+                    startangle=90,
+                    colors=colors,
+                    wedgeprops=dict(width=0.4, edgecolor='w'),
+                    textprops={'fontsize': 12}
+                )
+                ax2.set_title('Intoxicant Distribution', fontsize=13, fontweight='bold')
+                ax2.legend(wedges, intoxicant_counts.index, title="Intoxicant", loc="center left", bbox_to_anchor=(1, 0.5))
+                plt.setp(autotexts, size=13, weight="bold", color='white')
+                ax2.axis('equal')
+                st.pyplot(fig2)
