@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+torch
+torch-geometric
+rdkit
+pandas
+numpy
+streamlit
+requests
+scikit-learn
+py3Dmol
+stmol
+ipywidgets==7.6.3
