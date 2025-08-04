@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "cd backend && python gnn_api_simple.py",
+    "startCommand": "cd backend && uvicorn gnn_api_simple:app --host 0.0.0.0 --port $PORT",
     "healthcheckPath": "/",
     "healthcheckTimeout": 100,
     "restartPolicyType": "ON_FAILURE",
