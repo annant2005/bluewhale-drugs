@@ -11,10 +11,5 @@
       "src": "/(.*)",
       "dest": "gnn_api_simple.py"
     }
-  ],
-  "functions": {
-    "gnn_api_simple.py": {
-      "maxDuration": 30
-    }
-  }
+  ]
 } 
