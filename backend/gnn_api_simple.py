@@ -328,6 +328,11 @@ def get_accuracy():
 def root():
     return {"message": "Simple Toxicity Prediction API", "status": "running"}
 
+@app.get("/health")
+def health_check():
+    """Simple health check endpoint"""
+    return {"status": "healthy", "message": "API is running"}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000) 
