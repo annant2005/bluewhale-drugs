@@ -133,3 +133,13 @@ def explain(request: MoleculeRequest):
     # Dummy: assign random importance to each atom
     importances = np.random.rand(x.shape[0]).tolist()
     return {"importances": importances}
+
+@app.get("/accuracy")
+def get_accuracy():
+    acc_path = os.path.join(os.path.dirname(__file__), "accuracy.txt")
+    if os.path.exists(acc_path):
+        with open(acc_path, "r") as f:
+            acc = f.read().strip()
+        return {"accuracy": float(acc)}
+    else:
+        return {"accuracy": None, "error": "Accuracy not available. Train the model first."}

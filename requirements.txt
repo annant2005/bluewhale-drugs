@@ -5,7 +5,7 @@ torch-geometric
 rdkit
 pandas
 numpy
-streamlit
+streamlit>=1.28.0
 requests
 scikit-learn
 py3Dmol

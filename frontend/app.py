@@ -2,6 +2,10 @@ import streamlit as st
 import requests
 from rdkit import Chem
 from rdkit.Chem import Draw
+import os
+
+# Get backend URL from environment variable or use localhost as fallback
+BACKEND_URL = os.getenv('BACKEND_URL', 'http://localhost:8000')
 
 st.set_page_config(page_title="Drug Discovery with GNNs", layout="centered")
 
@@ -19,7 +23,7 @@ if st.button("Predict"):
         if mol:
             st.image(Draw.MolToImage(mol, size=(300, 300)), caption="Molecule Structure")
             with st.spinner("Predicting..."):
-                response = requests.post("http://localhost:8000/predict", json={"smiles": smiles})
+                response = requests.post(f"{BACKEND_URL}/predict", json={"smiles": smiles})
                 if response.ok:
                     result = response.json()
                     if "prediction" in result:
